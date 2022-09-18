@@ -1,5 +1,7 @@
 #include "HMDDevice.hpp"
+#include "pi.hpp"
 #include <Windows.h>
+#include <WinUser.h>
 
 ExampleDriver::HMDDevice::HMDDevice(std::string serial):serial_(serial)
 {
@@ -23,8 +25,94 @@ void ExampleDriver::HMDDevice::Update()
     // Get orientation
     this->rot_y_ += (1.0f * (GetAsyncKeyState(VK_RIGHT) == 0) - 1.0f * (GetAsyncKeyState(VK_LEFT) == 0)) * delta_seconds;
     this->rot_x_ += (-1.0f * (GetAsyncKeyState(VK_UP) == 0) + 1.0f * (GetAsyncKeyState(VK_DOWN) == 0)) * delta_seconds;
-    this->rot_x_ = std::fmax(this->rot_x_, -3.14159f/2);
-    this->rot_x_ = std::fmin(this->rot_x_, 3.14159f/2);
+    this->rot_x_ = std::fmax(this->rot_x_, -PI/2);
+    this->rot_x_ = std::fmin(this->rot_x_, PI/2);
+
+    /*// Orthogonal rotation
+    if (GetAsyncKeyState(VK_NUMPAD8) != 0) {
+        this->rot_x_ = 0;
+        this->rot_y_ = 0;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD4) != 0) {
+        this->rot_x_ = 0;
+        this->rot_y_ = PI / 2;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD2) != 0) {
+        this->rot_x_ = 0;
+        this->rot_y_ = PI;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD6) != 0) {
+        this->rot_x_ = 0;
+        this->rot_y_ = -PI / 2;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD9) != 0) {
+        // this->rot_x_ = PI / 2;
+        this->rot_x_ += PI / 3;
+        // this->rot_y_ = 0;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD3) != 0) {
+        // this->rot_x_ = -PI / 2;
+        this->rot_x_ -= PI / 3;
+        // this->rot_y_ = 0;
+    }
+
+    if (GetAsyncKeyState(VK_NEXT) != 0) {
+        // this->rot_x_ = 0;
+        this->rot_y_ += 2 * PI / 5;
+    }
+
+    if (GetAsyncKeyState(VK_PRIOR) != 0) {
+        // this->rot_x_ = 0;
+        this->rot_y_ -= 2 * PI / 5;
+    }*/
+
+    if (GetAsyncKeyState(VK_NUMPAD8)) {
+        this->rot_y_ = 0;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD9)) {
+        // this->rot_y_ = -PI / 4;
+        this->rot_y_ = -PI / 3;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD6)) {
+        this->rot_y_ = -PI / 2;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD3)) {
+        // this->rot_y_ = -PI / 4 * 3;
+        this->rot_y_ = -PI / 3 * 2;
+    }
+
+    if (GetAsyncKeyState(VK_NUMPAD2)) {
+        this->rot_y_ = PI;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD1)) {
+        // this->rot_y_ = PI / 4 * 3;
+        this->rot_y_ = PI / 3 * 2;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD4)) {
+        this->rot_y_ = PI / 2;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD7)) {
+        // this->rot_y_ = PI / 4;
+        this->rot_y_ = PI / 3;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD8)) {
+        this->rot_y_ = 0;
+    }
+    if (GetAsyncKeyState(VK_HOME)) {
+        this->rot_x_ = 0;
+    }
+    if (GetAsyncKeyState(VK_INSERT)) {
+        this->rot_x_ = PI / 4;
+    }
+    if (GetAsyncKeyState(VK_DELETE)) {
+        this->rot_x_ = -PI / 4;
+    }
+    if (GetAsyncKeyState(VK_PRIOR)) {
+        this->rot_x_ = PI / 2;
+    }
+    if (GetAsyncKeyState(VK_NEXT)) {
+        this->rot_x_ = -PI / 2;
+    }
 
     linalg::vec<float, 4> y_quat{ 0, std::sinf(this->rot_y_ / 2), 0, std::cosf(this->rot_y_ / 2) };
 
@@ -39,7 +127,7 @@ void ExampleDriver::HMDDevice::Update()
 
     // Update position based on rotation
     linalg::vec<float, 3> forward_vec{-1.0f * (GetAsyncKeyState(0x44) == 0) + 1.0f * (GetAsyncKeyState(0x41) == 0), 0, 0};
-    linalg::vec<float, 3> right_vec{0, 0, 1.0f * (GetAsyncKeyState(0x57) == 0) - 1.0f * (GetAsyncKeyState(0x53) == 0) };
+    linalg::vec<float, 3> right_vec{0, 0, 1.0f * (GetAsyncKeyState(0x57) == 0) - 1.0f * (GetAsyncKeyState(0x58) == 0) };
     linalg::vec<float, 3> final_dir = forward_vec + right_vec;
     if (linalg::length(final_dir) > 0.01) {
         final_dir = linalg::normalize(final_dir) * (float)delta_seconds;
@@ -114,7 +202,7 @@ vr::EVRInitError ExampleDriver::HMDDevice::Activate(uint32_t unObjectId)
     GetDriver()->GetProperties()->SetFloatProperty(props, vr::Prop_UserIpdMeters_Float, vr::VRSettings()->GetFloat(vr::k_pch_SteamVR_Section, vr::k_pch_SteamVR_IPD_Float));
 
     // Set the display FPS
-    GetDriver()->GetProperties()->SetFloatProperty(props, vr::Prop_DisplayFrequency_Float, 90.f);
+    GetDriver()->GetProperties()->SetFloatProperty(props, vr::Prop_DisplayFrequency_Float, 30.f);
     
     // Set up a model "number" (not needed but good to have)
     GetDriver()->GetProperties()->SetStringProperty(props, vr::Prop_ModelNumber_String, "EXAMPLE_HMD_DEVICE");
@@ -130,8 +218,12 @@ vr::EVRInitError ExampleDriver::HMDDevice::Activate(uint32_t unObjectId)
     GetDriver()->GetProperties()->SetStringProperty(props, vr::Prop_NamedIconPathDeviceStandby_String, "{example}/icons/hmd_not_ready.png");
     GetDriver()->GetProperties()->SetStringProperty(props, vr::Prop_NamedIconPathDeviceAlertLow_String, "{example}/icons/hmd_not_ready.png");
 
-    
+    // Proximity sensor
+    GetDriver()->GetInput()->CreateBooleanComponent(props, "/proximity", &this->proximity_);
+    GetDriver()->GetInput()->UpdateBooleanComponent(this->proximity_, true, 0);
 
+    // Debug OFF
+    GetDriver()->GetProperties()->SetBoolProperty(props, vr::Prop_DisplayDebugMode_Bool, true);
 
     return vr::EVRInitError::VRInitError_None;
 }
@@ -184,30 +276,30 @@ bool ExampleDriver::HMDDevice::IsDisplayRealDisplay()
 
 void ExampleDriver::HMDDevice::GetRecommendedRenderTargetSize(uint32_t* pnWidth, uint32_t* pnHeight)
 {
-    *pnWidth = this->window_width_;
-    *pnHeight = this->window_height_;
+    *pnHeight = this->target_height_;
+    *pnWidth = this->target_width_;
 }
 
 void ExampleDriver::HMDDevice::GetEyeOutputViewport(vr::EVREye eEye, uint32_t* pnX, uint32_t* pnY, uint32_t* pnWidth, uint32_t* pnHeight)
 {
     *pnY = 0;
-    *pnWidth = this->window_width_ / 2;
-    *pnHeight = this->window_height_;
+    *pnHeight = this->target_height_;
+    *pnWidth = this->target_width_;
 
     if (eEye == vr::EVREye::Eye_Left) {
         *pnX = 0;
     }
     else {
-        *pnX = this->window_width_ / 2;
+        *pnX = this->target_width_;
     }
 }
 
 void ExampleDriver::HMDDevice::GetProjectionRaw(vr::EVREye eEye, float* pfLeft, float* pfRight, float* pfTop, float* pfBottom)
 {
-    *pfLeft = -1;
-    *pfRight = 1;
-    *pfTop = -1;
-    *pfBottom = 1;
+    *pfLeft = -1.0f;
+    *pfRight = 1.0f;
+    *pfTop = -1.0f;
+    *pfBottom = 1.0f;
 }
 
 vr::DistortionCoordinates_t ExampleDriver::HMDDevice::ComputeDistortion(vr::EVREye eEye, float fU, float fV)

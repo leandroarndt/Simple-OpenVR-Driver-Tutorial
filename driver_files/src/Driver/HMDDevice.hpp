@@ -41,13 +41,18 @@ namespace ExampleDriver {
 
         vr::DriverPose_t last_pose_ = IVRDevice::MakeDefaultPose();
 
+        uint32_t target_width_ = 1440;
+        uint32_t target_height_ = 1440;
         uint32_t window_x_ = 0;
         uint32_t window_y_ = 0;
-        uint32_t window_width_ = 1920;
+        uint32_t window_width_ = 1080 * 2;
         uint32_t window_height_ = 1080;
 
         float pos_x_ = 0, pos_y_ = 0, pos_z_ = 0;
         float rot_y_ = 0, rot_x_ = 0;
+
+        // Proximity sensor
+        vr::VRInputComponentHandle_t proximity_ = true;
 
     };
 };
