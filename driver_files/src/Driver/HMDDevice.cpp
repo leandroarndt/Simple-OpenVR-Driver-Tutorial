@@ -28,56 +28,17 @@ void ExampleDriver::HMDDevice::Update()
     this->rot_x_ = std::fmax(this->rot_x_, -PI/2);
     this->rot_x_ = std::fmin(this->rot_x_, PI/2);
 
-    /*// Orthogonal rotation
-    if (GetAsyncKeyState(VK_NUMPAD8) != 0) {
-        this->rot_x_ = 0;
-        this->rot_y_ = 0;
-    }
-    if (GetAsyncKeyState(VK_NUMPAD4) != 0) {
-        this->rot_x_ = 0;
-        this->rot_y_ = PI / 2;
-    }
-    if (GetAsyncKeyState(VK_NUMPAD2) != 0) {
-        this->rot_x_ = 0;
-        this->rot_y_ = PI;
-    }
-    if (GetAsyncKeyState(VK_NUMPAD6) != 0) {
-        this->rot_x_ = 0;
-        this->rot_y_ = -PI / 2;
-    }
-    if (GetAsyncKeyState(VK_NUMPAD9) != 0) {
-        // this->rot_x_ = PI / 2;
-        this->rot_x_ += PI / 3;
-        // this->rot_y_ = 0;
-    }
-    if (GetAsyncKeyState(VK_NUMPAD3) != 0) {
-        // this->rot_x_ = -PI / 2;
-        this->rot_x_ -= PI / 3;
-        // this->rot_y_ = 0;
-    }
-
-    if (GetAsyncKeyState(VK_NEXT) != 0) {
-        // this->rot_x_ = 0;
-        this->rot_y_ += 2 * PI / 5;
-    }
-
-    if (GetAsyncKeyState(VK_PRIOR) != 0) {
-        // this->rot_x_ = 0;
-        this->rot_y_ -= 2 * PI / 5;
-    }*/
-
+    // Orthogonal rotation
     if (GetAsyncKeyState(VK_NUMPAD8)) {
         this->rot_y_ = 0;
     }
     if (GetAsyncKeyState(VK_NUMPAD9)) {
-        // this->rot_y_ = -PI / 4;
         this->rot_y_ = -PI / 3;
     }
     if (GetAsyncKeyState(VK_NUMPAD6)) {
         this->rot_y_ = -PI / 2;
     }
     if (GetAsyncKeyState(VK_NUMPAD3)) {
-        // this->rot_y_ = -PI / 4 * 3;
         this->rot_y_ = -PI / 3 * 2;
     }
 
@@ -85,18 +46,23 @@ void ExampleDriver::HMDDevice::Update()
         this->rot_y_ = PI;
     }
     if (GetAsyncKeyState(VK_NUMPAD1)) {
-        // this->rot_y_ = PI / 4 * 3;
         this->rot_y_ = PI / 3 * 2;
     }
     if (GetAsyncKeyState(VK_NUMPAD4)) {
         this->rot_y_ = PI / 2;
     }
     if (GetAsyncKeyState(VK_NUMPAD7)) {
-        // this->rot_y_ = PI / 4;
         this->rot_y_ = PI / 3;
     }
     if (GetAsyncKeyState(VK_NUMPAD8)) {
         this->rot_y_ = 0;
+    }
+    if (GetAsyncKeyState(VK_NUMPAD5)) {
+        this->rot_x_ = 0;
+        this->rot_y_ = 0;
+        this->pos_x_ = 0;
+        this->pos_y_ = 0;
+        this->pos_z_ = 0;
     }
     if (GetAsyncKeyState(VK_HOME)) {
         this->rot_x_ = 0;
